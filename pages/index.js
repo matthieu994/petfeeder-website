@@ -1,65 +1,48 @@
-import Link from 'next/link'
-import dbConnect from '../lib/dbConnect'
-import Pet from '../models/Pet'
+import Link from 'next/link';
+import dbConnect from '../lib/dbConnect';
+import Config from '../models/Config';
 
-const Index = ({ pets }) => (
-  <>
-    {/* Create a card for each pet */}
-    {pets.map((pet) => (
-      <div key={pet._id}>
-        <div className="card">
-          <img src={pet.image_url} />
-          <h5 className="pet-name">{pet.name}</h5>
-          <div className="main-content">
-            <p className="pet-name">{pet.name}</p>
-            <p className="owner">Owner: {pet.owner_name}</p>
+const Index = ({ config }) => {
+  const getDate = (date) =>
+    `${new Date(date).toLocaleDateString()} ${new Date(date).toLocaleTimeString()}`;
 
-            {/* Extra Pet Info: Likes and Dislikes */}
-            <div className="likes info">
-              <p className="label">Likes</p>
-              <ul>
-                {pet.likes.map((data, index) => (
-                  <li key={index}>{data} </li>
-                ))}
-              </ul>
-            </div>
-            <div className="dislikes info">
-              <p className="label">Dislikes</p>
-              <ul>
-                {pet.dislikes.map((data, index) => (
-                  <li key={index}>{data} </li>
-                ))}
-              </ul>
-            </div>
+  return (
+    config && (
+      <div key={config._id}>
+        <p className="config-createdAt">Created on {getDate(config.createdAt)}</p>
 
-            <div className="btn-container">
-              <Link href="/[id]/edit" as={`/${pet._id}/edit`}>
-                <button className="btn edit">Edit</button>
-              </Link>
-              <Link href="/[id]" as={`/${pet._id}`}>
-                <button className="btn view">View</button>
-              </Link>
-            </div>
-          </div>
+        <div className="feed_on info">
+          <p className="label">Feed On</p>
+          <ul>
+            {config.feed_on.sort().map((data, index) => (
+              <li key={index}>{data} </li>
+            ))}
+          </ul>
         </div>
       </div>
-    ))}
-  </>
-)
+    )
+  );
+};
 
-/* Retrieves pet(s) data from mongodb database */
+/* Retrieves config(s) data from mongodb database */
 export async function getServerSideProps() {
-  await dbConnect()
+  await dbConnect();
 
   /* find all the data in our database */
-  const result = await Pet.find({})
-  const pets = result.map((doc) => {
-    const pet = doc.toObject()
-    pet._id = pet._id.toString()
-    return pet
-  })
+  const result = await Config.find({}, {}, { sort: { createdAt: -1 } });
+  const configs = result.map((doc) => {
+    const config = doc.toObject();
+    config._id = config._id.toString();
+    config.createdAt = new Date(config.createdAt).getTime();
+    config.updatedAt = new Date(config.updatedAt).getTime();
+    return config;
+  });
 
-  return { props: { pets: pets } }
+  if (configs?.length > 0) {
+    return { props: { config: configs[0] } };
+  } else {
+    return { props: { config: null } };
+  }
 }
 
-export default Index
+export default Index;

@@ -1,202 +1,95 @@
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import { mutate } from 'swr'
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useForm } from 'react-hook-form';
+import { mutate } from 'swr';
 
-const Form = ({ formId, petForm, forNewPet = true }) => {
-  const router = useRouter()
-  const contentType = 'application/json'
-  const [errors, setErrors] = useState({})
-  const [message, setMessage] = useState('')
+const Form = ({ formId }) => {
+  const router = useRouter();
+  const contentType = 'application/json';
 
-  const [form, setForm] = useState({
-    name: petForm.name,
-    owner_name: petForm.owner_name,
-    species: petForm.species,
-    age: petForm.age,
-    poddy_trained: petForm.poddy_trained,
-    diet: petForm.diet,
-    image_url: petForm.image_url,
-    likes: petForm.likes,
-    dislikes: petForm.dislikes,
-  })
-
-  /* The PUT method edits an existing entry in the mongodb database. */
-  const putData = async (form) => {
-    const { id } = router.query
-
-    try {
-      const res = await fetch(`/api/pets/${id}`, {
-        method: 'PUT',
-        headers: {
-          Accept: contentType,
-          'Content-Type': contentType,
-        },
-        body: JSON.stringify(form),
-      })
-
-      // Throw error with status code in case Fetch API req failed
-      if (!res.ok) {
-        throw new Error(res.status)
-      }
-
-      const { data } = await res.json()
-
-      mutate(`/api/pets/${id}`, data, false) // Update the local data without a revalidation
-      router.push('/')
-    } catch (error) {
-      setMessage('Failed to update pet')
-    }
-  }
+  const [message, setMessage] = useState('');
+  const { register, handleSubmit } = useForm();
+  const [indexes, setIndexes] = useState([0]);
+  const [counter, setCounter] = useState(1);
 
   /* The POST method adds a new entry in the mongodb database. */
-  const postData = async (form) => {
+  const postData = async (data) => {
     try {
-      const res = await fetch('/api/pets', {
+      const res = await fetch('/api/configs', {
         method: 'POST',
         headers: {
           Accept: contentType,
           'Content-Type': contentType,
         },
-        body: JSON.stringify(form),
-      })
+        body: JSON.stringify(data),
+      });
 
       // Throw error with status code in case Fetch API req failed
       if (!res.ok) {
-        throw new Error(res.status)
+        throw new Error(res.status);
       }
 
-      router.push('/')
+      router.push('/');
     } catch (error) {
-      setMessage('Failed to add pet')
+      setMessage('Failed to add config');
     }
-  }
+  };
 
-  const handleChange = (e) => {
-    const target = e.target
-    const value =
-      target.name === 'poddy_trained' ? target.checked : target.value
-    const name = target.name
+  const onSubmit = (data) => {
+    const dataToSubmit = { feed_on: indexes.map((index) => data.config[index]) };
+    console.log(dataToSubmit);
+    postData(dataToSubmit);
+  };
 
-    setForm({
-      ...form,
-      [name]: value,
-    })
-  }
+  const addFeed = () => {
+    setIndexes((prevIndexes) => [...prevIndexes, counter]);
+    setCounter((prevCounter) => prevCounter + 1);
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const errs = formValidate()
-    if (Object.keys(errs).length === 0) {
-      forNewPet ? postData(form) : putData(form)
-    } else {
-      setErrors({ errs })
-    }
-  }
+  const removeFeed = (index) => () => {
+    setIndexes((prevIndexes) => [...prevIndexes.filter((item) => item !== index)]);
+  };
 
-  /* Makes sure pet info is filled for pet name, owner name, species, and image url*/
-  const formValidate = () => {
-    let err = {}
-    if (!form.name) err.name = 'Name is required'
-    if (!form.owner_name) err.owner_name = 'Owner is required'
-    if (!form.species) err.species = 'Species is required'
-    if (!form.image_url) err.image_url = 'Image URL is required'
-    return err
-  }
+  const clearFeeds = () => {
+    setIndexes([]);
+  };
 
   return (
     <>
-      <form id={formId} onSubmit={handleSubmit}>
-        <label htmlFor="name">Name</label>
-        <input
-          type="text"
-          maxLength="20"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-
-        <label htmlFor="owner_name">Owner</label>
-        <input
-          type="text"
-          maxLength="20"
-          name="owner_name"
-          value={form.owner_name}
-          onChange={handleChange}
-          required
-        />
-
-        <label htmlFor="species">Species</label>
-        <input
-          type="text"
-          maxLength="30"
-          name="species"
-          value={form.species}
-          onChange={handleChange}
-          required
-        />
-
-        <label htmlFor="age">Age</label>
-        <input
-          type="number"
-          name="age"
-          value={form.age}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="poddy_trained">Potty Trained</label>
-        <input
-          type="checkbox"
-          name="poddy_trained"
-          checked={form.poddy_trained}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="diet">Diet</label>
-        <textarea
-          name="diet"
-          maxLength="60"
-          value={form.diet}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="image_url">Image URL</label>
-        <input
-          type="url"
-          name="image_url"
-          value={form.image_url}
-          onChange={handleChange}
-          required
-        />
-
-        <label htmlFor="likes">Likes</label>
-        <textarea
-          name="likes"
-          maxLength="60"
-          value={form.likes}
-          onChange={handleChange}
-        />
-
-        <label htmlFor="dislikes">Dislikes</label>
-        <textarea
-          name="dislikes"
-          maxLength="60"
-          value={form.dislikes}
-          onChange={handleChange}
-        />
+      <form id={formId} onSubmit={handleSubmit(onSubmit)}>
+        <button type="button" onClick={addFeed} className="btn">
+          Add
+        </button>
+        <button type="button" onClick={clearFeeds} className="btn">
+          Clear
+        </button>
 
         <button type="submit" className="btn">
           Submit
         </button>
+
+        {indexes.map((index) => {
+          const fieldName = `config[${index}]`;
+          return (
+            <fieldset name={fieldName} key={fieldName}>
+              <label htmlFor="feed_on">Feed On</label>
+              <input
+                type="time"
+                name={fieldName}
+                required
+                {...register(fieldName, { required: true })}
+              />
+
+              <button type="button" onClick={removeFeed(index)}>
+                Remove
+              </button>
+            </fieldset>
+          );
+        })}
       </form>
       <p>{message}</p>
-      <div>
-        {Object.keys(errors).map((err, index) => (
-          <li key={index}>{err}</li>
-        ))}
-      </div>
     </>
-  )
-}
+  );
+};
 
-export default Form
+export default Form;
