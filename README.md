@@ -16,3 +16,7 @@ npm run dev
 # Endpoint
 
 `/api/config` : retrieves last updated config
+
+---
+
+## See it live on https://petfeeder-website.vercel.app/

@@ -36,7 +36,6 @@ const Form = ({ formId }) => {
 
   const onSubmit = (data) => {
     const dataToSubmit = { feed_on: indexes.map((index) => data.config[index]) };
-    console.log(dataToSubmit);
     postData(dataToSubmit);
   };
 
@@ -56,16 +55,18 @@ const Form = ({ formId }) => {
   return (
     <>
       <form id={formId} onSubmit={handleSubmit(onSubmit)}>
-        <button type="button" onClick={addFeed} className="btn">
-          Add
-        </button>
-        <button type="button" onClick={clearFeeds} className="btn">
-          Clear
-        </button>
+        <div className="button-container">
+          <button type="button" onClick={addFeed} className="btn">
+            Add
+          </button>
+          <button type="button" onClick={clearFeeds} className="btn">
+            Clear
+          </button>
 
-        <button type="submit" className="btn">
-          Submit
-        </button>
+          <button type="submit" className="btn">
+            Submit
+          </button>
+        </div>
 
         {indexes.map((index) => {
           const fieldName = `config[${index}]`;
@@ -79,7 +80,7 @@ const Form = ({ formId }) => {
                 {...register(fieldName, { required: true })}
               />
 
-              <button type="button" onClick={removeFeed(index)}>
+              <button type="button" className="btn small" onClick={removeFeed(index)}>
                 Remove
               </button>
             </fieldset>

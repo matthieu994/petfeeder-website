@@ -1,6 +1,5 @@
-import Link from 'next/link';
 import dbConnect from '../lib/dbConnect';
-import Config from '../models/Config';
+import { getLastConfig } from './api/config';
 
 const Index = ({ config }) => {
   const getDate = (date) =>
@@ -14,7 +13,7 @@ const Index = ({ config }) => {
         <div className="feed_on info">
           <p className="label">Feed On</p>
           <ul>
-            {config.feed_on.sort().map((data, index) => (
+            {config.feed_on.map((data, index) => (
               <li key={index}>{data} </li>
             ))}
           </ul>
@@ -29,15 +28,8 @@ export async function getServerSideProps() {
   await dbConnect();
 
   /* find all the data in our database */
-  const doc = await Config.findOne({}, {}, { sort: { createdAt: -1 } });
-  let config = null;
-  if (!!doc) {
-    config = doc.toObject();
-    config._id = config._id.toString();
-    config.createdAt = new Date(config.createdAt).getTime();
-    config.updatedAt = new Date(config.updatedAt).getTime();
-  }
-  return { props: { config: config } };
+  const lastConfig = await getLastConfig();
+  return { props: { config: lastConfig } };
 }
 
 export default Index;
