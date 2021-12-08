@@ -9,8 +9,17 @@ export default async function handler(req, res) {
   switch (method) {
     case 'GET':
       try {
-        const configs = await Config.find({}); /* find all the data in our database */
-        res.status(200).json({ success: true, data: configs });
+        const doc = await Config.findOne({}, {}, { sort: { createdAt: -1 } });
+
+        if (!!doc) {
+          const config = doc.toObject();
+          config._id = config._id.toString();
+          config.createdAt = new Date(config.createdAt).getTime();
+          config.updatedAt = new Date(config.updatedAt).getTime();
+          res.status(200).json({ success: true, data: config });
+        } else {
+          res.status(400).json({ success: false });
+        }
       } catch (error) {
         res.status(400).json({ success: false });
       }

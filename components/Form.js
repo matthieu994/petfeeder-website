@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
-import { mutate } from 'swr';
 
 const Form = ({ formId }) => {
   const router = useRouter();
@@ -15,7 +14,7 @@ const Form = ({ formId }) => {
   /* The POST method adds a new entry in the mongodb database. */
   const postData = async (data) => {
     try {
-      const res = await fetch('/api/configs', {
+      const res = await fetch('/api/config', {
         method: 'POST',
         headers: {
           Accept: contentType,

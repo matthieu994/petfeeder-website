@@ -29,20 +29,15 @@ export async function getServerSideProps() {
   await dbConnect();
 
   /* find all the data in our database */
-  const result = await Config.find({}, {}, { sort: { createdAt: -1 } });
-  const configs = result.map((doc) => {
-    const config = doc.toObject();
+  const doc = await Config.findOne({}, {}, { sort: { createdAt: -1 } });
+  let config = null;
+  if (!!doc) {
+    config = doc.toObject();
     config._id = config._id.toString();
     config.createdAt = new Date(config.createdAt).getTime();
     config.updatedAt = new Date(config.updatedAt).getTime();
-    return config;
-  });
-
-  if (configs?.length > 0) {
-    return { props: { config: configs[0] } };
-  } else {
-    return { props: { config: null } };
   }
+  return { props: { config: config } };
 }
 
 export default Index;
