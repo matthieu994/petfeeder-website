@@ -14,19 +14,6 @@ input,
 textarea {
   outline: none;
 }
-input,
-textarea {
-  border: 1px solid rgb(199, 199, 199);
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 90%;
-  width: 100%;
-  height: 30px;
-  color: rgb(53, 53, 53);
-}
-textarea {
-  height: 50px;
-}
 label {
   margin-top: 10px;
 }
@@ -50,4 +37,27 @@ form .button-container {
 .fieldset-container {
   overflow-y: auto;
   max-height: calc(100% - 2vh - 62px);
+}
+
+.fieldset-container > fieldset {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 5px;
+  margin-bottom: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+}
+fieldset button.btn {
+  margin: 0;
+  text-decoration: underline;
+  border: none;
+}
+
+input[type='time'] {
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+  color: black;
 }

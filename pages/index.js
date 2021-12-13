@@ -8,7 +8,7 @@ const Index = ({ config }) => {
   return (
     config && (
       <div key={config._id}>
-        <p className="config-createdAt">Created on {getDate(config.createdAt)}</p>
+        <p className="config-updatedAt">Updated on {getDate(config.updatedAt)}</p>
 
         <div className="feed_on info">
           <p className="label">Feed On</p>

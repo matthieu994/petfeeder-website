@@ -59,7 +59,11 @@ const Form = ({ formId, lastConfig }) => {
   };
 
   const removeFeed = (index) => () => {
-    setIndexes((prevIndexes) => [...prevIndexes.filter((item) => item.index !== index)]);
+    const newIndexes = indexes.filter((item) => item.index !== index);
+
+    if (newIndexes.length > 0) {
+      setIndexes([...newIndexes]);
+    }
   };
 
   const clearFeeds = () => {
@@ -91,10 +95,11 @@ const Form = ({ formId, lastConfig }) => {
 
             return (
               <fieldset name={fieldName} key={fieldName}>
-                <label htmlFor="feed_on">Feed On</label>
+                <label htmlFor={fieldName}>Feed on : </label>
                 <input
                   type="time"
                   name={fieldName}
+                  id={fieldName}
                   defaultValue={value !== null ? value : ''}
                   required
                   {...register(fieldName, { required: true })}
