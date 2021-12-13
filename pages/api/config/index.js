@@ -53,6 +53,10 @@ export default async function handler(req, res) {
     case 'GET':
       const lastConfig = await getLastConfig();
 
+      lastConfig.feed_on = lastConfig.feed_on.map((feed) => {
+        return parseInt(feed.split(':')[0]) * 60 + parseInt(feed.split(':')[1]);
+      });
+
       if (lastConfig !== null) {
         res.status(200).json({ success: true, data: lastConfig });
       } else {
