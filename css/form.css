@@ -2,6 +2,7 @@ form {
   width: 90%;
   margin: auto;
   max-width: 550px;
+  height: 100%;
 }
 input,
 form button,
@@ -44,4 +45,9 @@ form .button-container {
   flex-wrap: wrap;
   justify-content: space-evenly;
   margin-bottom: 2vh;
+}
+
+.fieldset-container {
+  overflow-y: auto;
+  max-height: calc(100% - 2vh - 62px);
 }

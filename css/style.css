@@ -4,6 +4,8 @@
   font-family: 'Open Sans', sans-serif;
   box-sizing: border-box;
   color: white;
+  margin: 0;
+  padding: 0;
 }
 
 /* Nav Area */
@@ -40,6 +42,10 @@
   justify-content: center;
 }
 
+.grid.wrapper {
+  height: calc(100vh - 80px);
+}
+
 .label {
   font-weight: bold;
 }
@@ -66,7 +72,8 @@
   outline: none;
 }
 
-.btn:hover {
+.btn:hover,
+.btn:focus {
   background: var(--accent);
   color: white;
 }

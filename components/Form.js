@@ -1,15 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
 
-const Form = ({ formId }) => {
+const Form = ({ formId, lastConfig }) => {
   const router = useRouter();
   const contentType = 'application/json';
 
   const [message, setMessage] = useState('');
   const { register, handleSubmit } = useForm();
-  const [indexes, setIndexes] = useState([0]);
+  const [indexes, setIndexes] = useState([{ index: 1, value: null }]);
   const [counter, setCounter] = useState(1);
+
+  useEffect(() => {
+    if (lastConfig?.feed_on.length > 0) {
+      setIndexes([]);
+      setCounter(0);
+
+      lastConfig.feed_on.forEach((feed, index) => {
+        addFeed(feed, index);
+      });
+    }
+  }, [lastConfig]);
 
   /* The POST method adds a new entry in the mongodb database. */
   const postData = async (data) => {
@@ -35,28 +46,34 @@ const Form = ({ formId }) => {
   };
 
   const onSubmit = (data) => {
-    const dataToSubmit = { feed_on: indexes.map((index) => data.config[index]) };
+    const dataToSubmit = { feed_on: indexes.map((item) => data.config[item.index]) };
     postData(dataToSubmit);
   };
 
-  const addFeed = () => {
-    setIndexes((prevIndexes) => [...prevIndexes, counter]);
+  const addFeed = (value = null, index = null) => {
+    setIndexes((prevIndexes) => [
+      ...prevIndexes,
+      { index: index === null ? counter + 1 : index, value: value },
+    ]);
     setCounter((prevCounter) => prevCounter + 1);
   };
 
   const removeFeed = (index) => () => {
-    setIndexes((prevIndexes) => [...prevIndexes.filter((item) => item !== index)]);
+    setIndexes((prevIndexes) => [...prevIndexes.filter((item) => item.index !== index)]);
   };
 
   const clearFeeds = () => {
-    setIndexes([]);
+    setCounter(1);
+    setIndexes([{ index: 1, value: null }]);
   };
 
   return (
     <>
+      <p>{message}</p>
+
       <form id={formId} onSubmit={handleSubmit(onSubmit)}>
         <div className="button-container">
-          <button type="button" onClick={addFeed} className="btn">
+          <button type="button" onClick={() => addFeed()} className="btn">
             Add
           </button>
           <button type="button" onClick={clearFeeds} className="btn">
@@ -68,26 +85,29 @@ const Form = ({ formId }) => {
           </button>
         </div>
 
-        {indexes.map((index) => {
-          const fieldName = `config[${index}]`;
-          return (
-            <fieldset name={fieldName} key={fieldName}>
-              <label htmlFor="feed_on">Feed On</label>
-              <input
-                type="time"
-                name={fieldName}
-                required
-                {...register(fieldName, { required: true })}
-              />
+        <div className="fieldset-container">
+          {indexes.map(({ index, value }) => {
+            const fieldName = `config[${index}]`;
 
-              <button type="button" className="btn small" onClick={removeFeed(index)}>
-                Remove
-              </button>
-            </fieldset>
-          );
-        })}
+            return (
+              <fieldset name={fieldName} key={fieldName}>
+                <label htmlFor="feed_on">Feed On</label>
+                <input
+                  type="time"
+                  name={fieldName}
+                  defaultValue={value !== null ? value : ''}
+                  required
+                  {...register(fieldName, { required: true })}
+                />
+
+                <button type="button" className="btn small" onClick={removeFeed(index)}>
+                  Remove
+                </button>
+              </fieldset>
+            );
+          })}
+        </div>
       </form>
-      <p>{message}</p>
     </>
   );
 };

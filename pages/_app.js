@@ -14,10 +14,10 @@ function MyApp({ Component, pageProps }) {
       <div className="top-bar">
         <div className="nav">
           <Link href="/">
-            <a>Last Config</a>
+            <a>Current Config</a>
           </Link>
-          <Link href="/new">
-            <a>Add Config</a>
+          <Link href="/edit">
+            <a>Edit Config</a>
           </Link>
         </div>
       </div>
