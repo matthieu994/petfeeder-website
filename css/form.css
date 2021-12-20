@@ -3,6 +3,7 @@ form {
   margin: auto;
   max-width: 550px;
   height: 100%;
+  padding-bottom: 30px;
 }
 input,
 form button,

@@ -8,6 +8,10 @@
   padding: 0;
 }
 
+body {
+  overflow: hidden;
+}
+
 /* Nav Area */
 .top-bar {
   width: 100%;
@@ -99,4 +103,43 @@
 
 .confirmation-box.show {
   display: block;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 230px;
+  max-height: 100%;
+}
+
+.home-container #config {
+  height: 100%;
+}
+
+div.feed_on {
+  margin-top: 1.5vh;
+  text-align: center;
+  border: 1px solid rgb(255 255 255 / 40%);
+  border-radius: 10px;
+  padding: 10px;
+  overflow: auto;
+  max-height: calc(100% - 1.5vh - 4.5em);
+}
+div.feed_on p {
+  font-weight: bold;
+  margin-bottom: 1vh;
+}
+div.feed_on ul {
+  list-style: none;
+}
+
+.feed-now {
+  margin-bottom: 4vh;
+}
+.feed-now > .btn {
+  font-weight: bold;
+  font-size: 1.1rem;
 }

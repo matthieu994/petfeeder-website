@@ -1,5 +1,5 @@
 import dbConnect from '../../../lib/dbConnect';
-import Config from '../../../models/Config';
+import Config, { SAMPLE_DOC } from '../../../models/Config';
 
 function formatDocToConfig(doc) {
   const config = doc.toObject();
@@ -20,7 +20,7 @@ export async function getLastConfig() {
       return createFirstConfig();
     }
   } catch (error) {
-    return null;
+    return formatDocToConfig({ toObject: () => SAMPLE_DOC });
   }
 }
 
@@ -34,14 +34,21 @@ async function createFirstConfig() {
       if (!!doc) {
         return formatDocToConfig(doc);
       } else {
-        return null;
+        throw new Error('Error while creating first config.');
       }
     } catch (error) {
-      return null;
+      throw new Error('Error while creating first config.');
     }
   } else {
-    return null;
+    throw new Error('Error while creating first config.');
   }
+}
+
+async function editConfig(feed_on) {
+  const config = await Config.findOne();
+  config.feed_on = feed_on;
+  await config.save();
+  return config;
 }
 
 export default async function handler(req, res) {
@@ -53,11 +60,15 @@ export default async function handler(req, res) {
     case 'GET':
       const lastConfig = await getLastConfig();
 
-      lastConfig.feed_on = lastConfig.feed_on.map((feed) => {
-        return parseInt(feed.split(':')[0]) * 60 + parseInt(feed.split(':')[1]);
-      });
-
       if (lastConfig !== null) {
+        lastConfig.feed_on = lastConfig.feed_on
+          .map((feed) => {
+            return String(feed).includes(':')
+              ? parseInt(feed.split(':')[0]) * 60 + parseInt(feed.split(':')[1])
+              : parseInt(feed);
+          })
+          .sort((a, b) => a - b);
+
         res.status(200).json({ success: true, data: lastConfig });
       } else {
         res.status(400).json({ success: false });
@@ -66,12 +77,9 @@ export default async function handler(req, res) {
       break;
     case 'POST':
       try {
-        const config = await Config.findOne();
-        console.log(config.feed_on, req.body.feed_on);
-        config.feed_on = req.body.feed_on;
-        await config.save();
+        const editedConfig = editConfig(req.body.feed_on);
 
-        res.status(201).json({ success: true, data: formatDocToConfig(config) });
+        res.status(201).json({ success: true, data: formatDocToConfig(editedConfig) });
       } catch (error) {
         res.status(400).json({ success: false });
       }

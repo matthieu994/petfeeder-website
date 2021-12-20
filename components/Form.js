@@ -73,7 +73,7 @@ const Form = ({ formId, lastConfig }) => {
 
   return (
     <>
-      <p>{message}</p>
+      {message && <p>{message}</p>}
 
       <form id={formId} onSubmit={handleSubmit(onSubmit)}>
         <div className="button-container">
