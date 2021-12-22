@@ -1,7 +1,7 @@
 import dbConnect from '../../../lib/dbConnect';
 import Config, { SAMPLE_DOC } from '../../../models/Config';
 
-function formatDocToConfig(doc) {
+export function formatDocToConfig(doc) {
   const config = doc.toObject();
   config._id = config._id.toString();
   config.createdAt = new Date(config.createdAt).getTime();
@@ -77,11 +77,11 @@ export default async function handler(req, res) {
       break;
     case 'POST':
       try {
-        const editedConfig = editConfig(req.body.feed_on);
+        await editConfig(req.body.feed_on);
 
-        res.status(201).json({ success: true, data: formatDocToConfig(editedConfig) });
+        res.status(201).json({ success: true, message: 'Config updated successfully !' });
       } catch (error) {
-        res.status(400).json({ success: false });
+        res.status(400).json({ success: false, message: error.message });
       }
 
       break;

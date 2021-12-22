@@ -24,7 +24,7 @@
   height: 10%;
   width: 5%;
   border-radius: 50%;
-  background: #161616;
+  background: var(--background-color);
 }
 .ear::after {
   transform-origin: 50% 100%;
@@ -60,7 +60,7 @@
   position: absolute;
   height: 100%;
   width: 100%;
-  background: #161616;
+  background: var(--background-color);
   border-radius: 50%;
 }
 
@@ -80,7 +80,7 @@
   height: 0;
   width: 100%;
   border-radius: 0 0 50% 50%/0 0 40% 40%;
-  background: #161616;
+  background: var(--background-color);
   -webkit-animation: blink 4s infinite ease-in;
   animation: blink 4s infinite ease-in;
 }
@@ -153,7 +153,7 @@
   top: 25%;
   height: 50%;
   width: 20%;
-  background: #161616;
+  background: var(--background-color);
   border-radius: 50%;
   -webkit-animation: look-around 4s infinite;
   animation: look-around 4s infinite;
@@ -230,9 +230,4 @@
   background: #fff;
   transform: translateX(-50%);
   border-radius: 50% 50% 50% 50%/30% 30% 70% 70%;
-}
-
-/* General page styling */
-html {
-  background: #161616;
 }

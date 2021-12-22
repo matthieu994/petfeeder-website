@@ -1,15 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 const Form = ({ formId, lastConfig }) => {
   const router = useRouter();
   const contentType = 'application/json';
 
-  const [message, setMessage] = useState('');
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    getValues,
+  } = useForm();
   const [indexes, setIndexes] = useState([{ index: 1, value: null }]);
   const [counter, setCounter] = useState(1);
+  const toastId = useRef(null);
+
+  const getFieldName = (index) => `config_${index}`;
 
   useEffect(() => {
     if (lastConfig?.feed_on.length > 0) {
@@ -19,12 +28,23 @@ const Form = ({ formId, lastConfig }) => {
       lastConfig.feed_on.forEach((feed, index) => {
         addFeed(feed, index);
       });
+
+      const initValues = lastConfig.feed_on.map((feed, index) => {
+        return {
+          [getFieldName(index)]: feed,
+        };
+      });
+      reset(...initValues);
     }
   }, [lastConfig]);
 
   /* The POST method adds a new entry in the mongodb database. */
   const postData = async (data) => {
     try {
+      toastId.current = toast('Updating config...', {
+        autoClose: false,
+      });
+
       const res = await fetch('/api/config', {
         method: 'POST',
         headers: {
@@ -39,14 +59,23 @@ const Form = ({ formId, lastConfig }) => {
         throw new Error(res.status);
       }
 
+      const json = await res.json();
+      toast.update(toastId.current, {
+        type: res.ok ? toast.TYPE.SUCCESS : toast.TYPE.ERROR,
+        render: `${json.message}`,
+        autoClose: 5000,
+      });
+
       router.push('/');
     } catch (error) {
-      setMessage('Failed to add config');
+      toast.error(`${json.message}`);
     }
   };
 
   const onSubmit = (data) => {
-    const dataToSubmit = { feed_on: indexes.map((item) => data.config[item.index]) };
+    const dataToSubmit = {
+      feed_on: indexes.map((item) => data[`${getFieldName(item.index)}`]),
+    };
     postData(dataToSubmit);
   };
 
@@ -58,7 +87,7 @@ const Form = ({ formId, lastConfig }) => {
     setCounter((prevCounter) => prevCounter + 1);
   };
 
-  const removeFeed = (index) => () => {
+  const removeFeed = (index) => {
     const newIndexes = indexes.filter((item) => item.index !== index);
 
     if (newIndexes.length > 0) {
@@ -72,48 +101,46 @@ const Form = ({ formId, lastConfig }) => {
   };
 
   return (
-    <>
-      {message && <p>{message}</p>}
+    <form id={formId} onSubmit={handleSubmit(onSubmit)}>
+      <div className="button-container">
+        <button type="button" onClick={() => addFeed()} className="btn">
+          Add
+        </button>
+        <button type="button" onClick={() => clearFeeds()} className="btn">
+          Clear
+        </button>
 
-      <form id={formId} onSubmit={handleSubmit(onSubmit)}>
-        <div className="button-container">
-          <button type="button" onClick={() => addFeed()} className="btn">
-            Add
-          </button>
-          <button type="button" onClick={clearFeeds} className="btn">
-            Clear
-          </button>
+        <input type="submit" className="btn" value="Submit" />
+      </div>
 
-          <button type="submit" className="btn">
-            Submit
-          </button>
-        </div>
+      <div className="fieldset-container">
+        {indexes.map(({ index, value }) => {
+          const fieldName = `${getFieldName(index)}`;
 
-        <div className="fieldset-container">
-          {indexes.map(({ index, value }) => {
-            const fieldName = `config[${index}]`;
+          return (
+            <fieldset key={fieldName}>
+              <label htmlFor={fieldName}>Feed on : </label>
+              <input
+                type="time"
+                name={fieldName}
+                id={fieldName}
+                defaultValue={value !== null ? value : ''}
+                required
+                {...register(fieldName, { required: true })}
+              />
 
-            return (
-              <fieldset name={fieldName} key={fieldName}>
-                <label htmlFor={fieldName}>Feed on : </label>
-                <input
-                  type="time"
-                  name={fieldName}
-                  id={fieldName}
-                  defaultValue={value !== null ? value : ''}
-                  required
-                  {...register(fieldName, { required: true })}
-                />
-
-                <button type="button" className="btn small" onClick={removeFeed(index)}>
-                  Remove
-                </button>
-              </fieldset>
-            );
-          })}
-        </div>
-      </form>
-    </>
+              <button
+                type="button"
+                className="btn small"
+                onClick={() => removeFeed(index)}
+              >
+                Remove
+              </button>
+            </fieldset>
+          );
+        })}
+      </div>
+    </form>
   );
 };
 

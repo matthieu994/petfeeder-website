@@ -1,12 +1,21 @@
 import dbConnect from '../lib/dbConnect';
 import { getLastConfig } from './api/config';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Index = ({ config }) => {
+  const router = useRouter();
+
   const getDate = (date) =>
     `${new Date(date).toLocaleDateString()} at ${new Date(date).toLocaleTimeString()}`;
 
   const feedCat = () => {
-    fetch('api/config/feed_now', { method: 'POST' });
+    fetch('api/config/feed_now', { method: 'POST' }).then(async (res) => {
+      const json = await res.json();
+      if (res.ok) toast.success(`${json.message}`);
+      else toast.error(`${json.message}`);
+    });
   };
 
   return (
@@ -21,6 +30,9 @@ const Index = ({ config }) => {
           <p className="config-updatedAt">Updated : {getDate(config.updatedAt)}</p>
 
           <div className="feed_on info">
+            <Link className="edit" href="/edit">
+              ✏️
+            </Link>
             <p>⏲️ Feed On ⏲️</p>
             <ul>
               {config.feed_on.map((data, index) => (

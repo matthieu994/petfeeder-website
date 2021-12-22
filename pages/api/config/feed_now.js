@@ -1,8 +1,9 @@
-import { getLastConfig } from '.';
+import { formatDocToConfig } from '.';
 import dbConnect from '../../../lib/dbConnect';
+import Config from '../../../models/Config';
 
 async function feedNow() {
-  const config = await getLastConfig();
+  const config = await Config.findOne();
   const now = new Date();
 
   // No previous instant feed
@@ -12,12 +13,15 @@ async function feedNow() {
     const newNow = now.getHours() * 60 + now.getMinutes();
 
     // If the previous instant feed is more than 1 minute ago
-    if (newNow > config.feed_now + 1) {
+    if (Math.abs(newNow - config.feed_now) >= 1) {
       config.feed_now = newNow;
+    } else {
+      throw new Error('The previous Instant Feed is too close !');
     }
   }
 
-  return config;
+  config.save();
+  return formatDocToConfig(config);
 }
 
 export default async function handler(req, res) {
@@ -28,10 +32,10 @@ export default async function handler(req, res) {
   switch (method) {
     case 'POST':
       try {
-        const data = await feedNow();
-        res.status(201).json({ success: true, data });
+        await feedNow();
+        res.status(201).json({ success: true, message: 'Instant Feed successful !' });
       } catch (error) {
-        res.status(400).json({ success: false });
+        res.status(400).json({ success: false, message: error.message });
       }
 
       break;
