@@ -21,4 +21,9 @@ const ConfigSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+ConfigSchema.pre('save', function (next) {
+  this.increment();
+  return next();
+});
+
 export default mongoose.models.Config || mongoose.model('Config', ConfigSchema);

@@ -11,8 +11,9 @@ const Index = ({ config }) => {
   const [disabled, setDisabled] = useState(config.feed_now);
 
   const feedCat = () => {
+    setDisabled(true);
+
     fetch('api/config/feed_now', { method: 'POST' }).then(async (res) => {
-      setDisabled(true);
       const json = await res.json();
       if (res.ok) toast.success(`${json.message}`);
       else toast.error(`${json.message}`);
