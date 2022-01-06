@@ -64,9 +64,9 @@ export default async function handler(req, res) {
 
   switch (method) {
     case 'GET':
-      const lastConfig = isESP(req) ? feedNow(false) : await getLastConfig();
+      const lastConfig = await getLastConfig();
 
-      if (lastConfig !== null) {
+      if (!!lastConfig?.feed_on) {
         lastConfig.feed_on = lastConfig.feed_on
           .map((feed) => {
             return String(feed).includes(':')
@@ -74,6 +74,10 @@ export default async function handler(req, res) {
               : parseInt(feed);
           })
           .sort((a, b) => a - b);
+
+        if (isESP(req)) {
+          feedNow(false);
+        }
 
         res.status(200).json({ success: true, data: lastConfig });
       } else {
