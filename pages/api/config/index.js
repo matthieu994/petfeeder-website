@@ -53,7 +53,6 @@ async function editFeedOn(feed_on) {
 }
 
 function isESP({ headers }) {
-  console.log(headers['user-agent']);
   return String(headers['user-agent'].split('/')[0]).toLowerCase().includes('esp');
 }
 

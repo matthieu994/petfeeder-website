@@ -2,13 +2,17 @@ import dbConnect from '../lib/dbConnect';
 import { getLastConfig } from './api/config';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import { useState } from 'react';
 
 const Index = ({ config }) => {
   const getDate = (date) =>
     `${new Date(date).toLocaleDateString()} at ${new Date(date).toLocaleTimeString()}`;
 
+  const [disabled, setDisabled] = useState(config.feed_now);
+
   const feedCat = () => {
     fetch('api/config/feed_now', { method: 'POST' }).then(async (res) => {
+      setDisabled(true);
       const json = await res.json();
       if (res.ok) toast.success(`${json.message}`);
       else toast.error(`${json.message}`);
@@ -18,7 +22,7 @@ const Index = ({ config }) => {
   return (
     <div className="home-container">
       <div className="feed-now">
-        <button className="btn" onClick={feedCat} disabled={config.feed_now === true}>
+        <button className="btn" onClick={feedCat} disabled={disabled}>
           😻 Feed Now 😻
         </button>
       </div>
@@ -49,7 +53,7 @@ export async function getServerSideProps() {
 
   /* find all the data in our database */
   const lastConfig = await getLastConfig();
-  return { props: { config: lastConfig } };
+  return { props: { config: lastConfig, disabled: lastConfig.feed_now } };
 }
 
 export default Index;
