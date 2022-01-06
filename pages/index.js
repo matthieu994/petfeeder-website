@@ -1,12 +1,9 @@
 import dbConnect from '../lib/dbConnect';
 import { getLastConfig } from './api/config';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 const Index = ({ config }) => {
-  const router = useRouter();
-
   const getDate = (date) =>
     `${new Date(date).toLocaleDateString()} at ${new Date(date).toLocaleTimeString()}`;
 
@@ -21,7 +18,7 @@ const Index = ({ config }) => {
   return (
     <div className="home-container">
       <div className="feed-now">
-        <button className="btn" onClick={feedCat}>
+        <button className="btn" onClick={feedCat} disabled={config.feed_now === true}>
           😻 Feed Now 😻
         </button>
       </div>

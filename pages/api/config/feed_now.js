@@ -2,22 +2,14 @@ import { formatDocToConfig } from '.';
 import dbConnect from '../../../lib/dbConnect';
 import Config from '../../../models/Config';
 
-async function feedNow() {
+export async function feedNow(doesFeedNow = true) {
   const config = await Config.findOne();
-  const now = new Date();
 
   // No previous instant feed
-  if (!config.feed_now) {
-    config.feed_now = now.getHours() * 60 + now.getMinutes();
+  if (config.feed_now !== doesFeedNow || config.feed_now === null) {
+    config.feed_now = doesFeedNow;
   } else {
-    const newNow = now.getHours() * 60 + now.getMinutes();
-
-    // If the previous instant feed is more than 1 minute ago
-    if (Math.abs(newNow - config.feed_now) >= 1) {
-      config.feed_now = newNow;
-    } else {
-      throw new Error('The previous Instant Feed is too close !');
-    }
+    throw new Error('The previous Instant Feed was not fulfilled !');
   }
 
   config.save();

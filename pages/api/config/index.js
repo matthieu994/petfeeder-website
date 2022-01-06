@@ -1,5 +1,6 @@
 import dbConnect from '../../../lib/dbConnect';
 import Config, { SAMPLE_DOC } from '../../../models/Config';
+import { feedNow } from './feed_now';
 
 export function formatDocToConfig(doc) {
   const config = doc.toObject();
@@ -44,11 +45,16 @@ async function createFirstConfig() {
   }
 }
 
-async function editConfig(feed_on) {
+async function editFeedOn(feed_on) {
   const config = await Config.findOne();
   config.feed_on = feed_on;
   await config.save();
   return config;
+}
+
+function isESP({ headers }) {
+  console.log(headers['user-agent']);
+  return String(headers['user-agent'].split('/')[0]).toLowerCase().includes('esp');
 }
 
 export default async function handler(req, res) {
@@ -58,7 +64,7 @@ export default async function handler(req, res) {
 
   switch (method) {
     case 'GET':
-      const lastConfig = await getLastConfig();
+      const lastConfig = isESP(req) ? feedNow(false) : await getLastConfig();
 
       if (lastConfig !== null) {
         lastConfig.feed_on = lastConfig.feed_on
@@ -77,7 +83,7 @@ export default async function handler(req, res) {
       break;
     case 'POST':
       try {
-        await editConfig(req.body.feed_on);
+        await editFeedOn(req.body.feed_on);
 
         res.status(201).json({ success: true, message: 'Config updated successfully !' });
       } catch (error) {

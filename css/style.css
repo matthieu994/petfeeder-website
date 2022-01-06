@@ -9,11 +9,12 @@
 
 :root {
   --background-color: #292929;
+  --shadow-color: rgba(121, 121, 121, 0.333);
 }
 
 /* General page styling */
 html {
-  background: #292929;
+  background: var(--background-color);
 }
 
 body {
@@ -86,11 +87,15 @@ body {
   transition: 0.5s all;
   outline: none;
   margin-top: 0;
+  user-select: none;
 }
 
 .btn:hover {
   background: var(--accent);
   color: white;
+}
+.btn:disabled {
+  pointer-events: none;
 }
 
 .edit.btn {
@@ -152,6 +157,23 @@ div.feed_on ul {
 }
 .feed-now > .btn {
   font-size: 1.1rem;
+  background: rgba(196, 196, 196, 0.795);
+  color: rgb(36, 36, 36);
+}
+.feed-now > .btn:disabled {
+  filter: brightness(0.5);
+  color: rgb(94, 94, 94);
+}
+.feed-now > .btn:hover {
+  box-shadow: 0.5px 1px 1px var(--shadow-color), 1px 2px 2px var(--shadow-color),
+    1.5px 3px 3px var(--shadow-color);
+  transition: 0.2s ease-out;
+}
+
+.feed-now > .btn:active {
+  box-shadow: inset 0.5px 1px 1px var(--shadow-color),
+    inset 1px 2px 2px var(--shadow-color), inset 1.5px 3px 3px var(--shadow-color);
+  background: rgba(175, 175, 175, 0.795);
 }
 
 .feed_on {

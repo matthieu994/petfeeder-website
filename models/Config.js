@@ -5,7 +5,7 @@ export const SAMPLE_DOC = {
   createdAt: Date.now() - 1 * 60 * 60 * 1000,
   updatedAt: Date.now(),
   feed_on: ['12:00', '08:00', '22:00'],
-  feed_now: 0,
+  feed_now: true,
 };
 
 /* ConfigSchema will correspond to a collection in your MongoDB database. */
@@ -15,7 +15,7 @@ const ConfigSchema = new mongoose.Schema(
       type: Array,
     },
     feed_now: {
-      type: Number,
+      type: Boolean,
     },
   },
   { timestamps: true }
