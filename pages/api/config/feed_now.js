@@ -9,7 +9,9 @@ export async function feedNow(doesFeedNow = true) {
   if (config.feed_now !== doesFeedNow || config.feed_now === null) {
     config.feed_now = doesFeedNow;
   } else {
-    throw new Error('The previous Instant Feed was not fulfilled !');
+    if (doesFeedNow === true && config.feed_now === true) {
+      throw new Error('The previous Instant Feed was not fulfilled !');
+    }
   }
 
   config.save();
