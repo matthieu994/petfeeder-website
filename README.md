@@ -1,4 +1,6 @@
-# How to use
+# See it live on https://petfeeder-website.vercel.app/
+
+# Usage
 
 ## Set up environment variables
 
@@ -16,10 +18,6 @@ npm run dev
 # Endpoint
 
 `/api/config` : retrieves last updated config
-
----
-
-## See it live on https://petfeeder-website.vercel.app/
 
 # ESP8266 (wi-fi microchip)
 [https://github.com/MathisLav/petfeeder-esp8266/](https://github.com/MathisLav/petfeeder-esp8266/)
