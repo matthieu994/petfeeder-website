@@ -21,6 +21,6 @@ npm run dev
 
 ## See it live on https://petfeeder-website.vercel.app/
 
-# ESP8266 (wi-fi microchip
+# ESP8266 (wi-fi microchip)
 [https://github.com/MathisLav/petfeeder-esp8266/](https://github.com/MathisLav/petfeeder-esp8266/)
 
