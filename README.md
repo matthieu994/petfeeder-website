@@ -2,9 +2,9 @@
 
 ## Set up environment variables
 
-Then set variable on `.env.local`:
+In `.env.local`:
 
-- `MONGODB_URI`
+- `MONGODB_URI` : Complete URI of the Mongo database
 
 ## Run Next.js
 
@@ -20,3 +20,7 @@ npm run dev
 ---
 
 ## See it live on https://petfeeder-website.vercel.app/
+
+# ESP8266 (wi-fi microchip
+[https://github.com/MathisLav/petfeeder-esp8266/](https://github.com/MathisLav/petfeeder-esp8266/)
+
