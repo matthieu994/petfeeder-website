@@ -1,5 +1,8 @@
 # See it live on https://petfeeder-website.vercel.app/
 
+# App Schema
+![App schema picture](./schema.png "App Schema")
+
 # Usage
 
 ## Set up environment variables
